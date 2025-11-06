@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="HandheldFriendly" content="true">
+    <title>AI With Abhay</title>
+    <link rel="icon" href="https://i.postimg.cc/85cmHBWg/photo-2025-11-03-09-20-04.jpg" type="image/png">
+    <style>
+        body {
+            background-color: #121212;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            display: none;
+        }
+        .password-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.9);
+            padding: 30px;
+            border-radius: 10px;
+            border: 1px solid #00ff00;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+            text-align: center;
+            width: 350px;
+        }
+        .password-container h2 {
+            margin-top: 0;
+            color: #00ff00;
+        }
+        .password-container p {
+            margin-bottom: 20px;
+            color: #ccc;
+        }
+        .password-container input {
+            padding: 12px;
+            width: 80%;
+            margin-bottom: 15px;
+            background-color: #222;
+            border: 1px solid #00ff00;
+            color: white;
+            border-radius: 5px;
+            font-family: monospace;
+        }
+        .password-container button {
+            padding: 12px 25px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 10px 5px;
+        }
+        .password-container button:hover {
+            background-color: #218838;
+        }
+        .telegram-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 20px;
+            color: #0088cc;
+            text-decoration: none;
+        }
+        .telegram-link img {
+            width: 24px;
+            margin-right: 10px;
+        }
+        h1, h3 {
+            color: #00ff00;
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
+        }
+        a {
+            color: cyan;
+            text-decoration: none;
+        }
+        a:hover {
+            color: #00ffff;
+            text-decoration: underline;
+        }
+        select, input {
+            padding: 10px;
+            margin: 10px 0;
+            background-color: #222;
+            color: white;
+            border: 1px solid #00ff00;
+            border-radius: 5px;
+            width: 100%;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            color: white;
+            background-color: #28a745;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .button-container {
+            display: flex;
+            justify-content: start;
+            flex-wrap: wrap;
+        }
+        .error-message {
+            color: red;
+        }
+        .animation-message {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            color: white;
+            border: 1px solid #00ff00;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+        }
+        .signal-item {
+            padding: 8px 0;
+            margin: 3px 0;
+            font-family: monospace;
+            white-space: pre;
+            font-size: 14px;
+        }
+        .signal-call {
+            color: #00ff00;
+        }
+        .signal-put {
+            color: #ff5555;
+        }
+        .download-btn {
+            background-color: #007bff;
+            margin: 20px 0;
+        }
+        .download-btn:hover {
+            background-color: #0069d9;
+        }
+        .telegram-btn {
+            background-color: #0088cc;
+        }
+        .telegram-btn:hover {
+            background-color: #0077b6;
+        }
+        #current-date, #current-time {
+            font-weight: bold;
+            color: #00ff00;
+        }
+        .timeframe-option {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .logo img {
+            height: 60px;
+        }
+        .candle-time {
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #00ff00;
+            border-bottom: 1px solid #333;
+            padding-bottom: 5px;
+        }
+        .mtg-message {
+            margin-bottom: 10px;
+            font-style: italic;
+            color: #ffff00;
+        }
+    </style>
+</head>
+<body>
+    <div class="password-container" id="password-container">
+        <div class="logo">
+            <img src="https://i.postimg.cc/85cmHBWg/photo-2025-11-03-09-20-04.jpg" alt="Quotex Signal Logo">
+        </div>
+        <h2>AI With Abhay</h2>
+        
+        <!-- Login Screen (shown when already authenticated) -->
+        <div id="login-screen" style="display: none;">
+            <p style="color: #00ff00; margin-bottom: 20px;">Welcome back! Click to login</p>
+            <button id="quick-login-btn">Login</button>
+        </div>
+        
+        <!-- Password Screen (shown for first time or after 3 days) -->
+        <div id="password-screen">
+            <p>Password required to access the signal generator</p>
+            <p style="font-size: 12px; color: #777;">(Join our Telegram channel to get the password)</p>
+            <input type="password" id="password-input" placeholder="Enter password">
+            <button id="submit-password">Submit</button>
+            <p id="password-error" style="color: red; display: none;">Incorrect password. Please try again.</p>
+        </div>
+        
+        <a href="https://t.me/abhayytrading" target="_blank" class="telegram-link">
+            <img src="https://telegram.org/img/t_logo.png" alt="Telegram">
+            Join Telegram Channel for Password
+        </a>
+    </div>
+
+    <div class="container" id="main-container">
+        <div class="logo">
+            <img src="https://i.postimg.cc/85cmHBWg/photo-2025-11-03-09-20-04.jpg" alt="Quotex Signal Logo">
+        </div>
+        <h1>Quotex Signal REAL-TIME SIGNAL GENERATOR</h1>
+        <p>Quotex Signal PREMIUM SOFTWARE</p>
+        
+        <h3>Select Timezone:</h3>
+        <select id="timezone-select">
+            <option value="Kolkata">India - Kolkata (IST - GMT+5:30)</option>
+            <option value="Mumbai">India - Mumbai (IST - GMT+5:30)</option>
+            <option value="Delhi">India - Delhi (IST - GMT+5:30)</option>
+            <option value="Bangalore">India - Bangalore (IST - GMT+5:30)</option>
+            <option value="Chennai">India - Chennai (IST - GMT+5:30)</option>
+            <option value="Hyderabad">India - Hyderabad (IST - GMT+5:30)</option>
+            <option value="Ahmedabad">India - Ahmedabad (IST - GMT+5:30)</option>
+            <option value="Pune">India - Pune (IST - GMT+5:30)</option>
+        </select>
+        
+        <p id="timezone-info">Timezone: <span id="timezone-display"></span> | Date: <span id="current-date"></span> | Time: <span id="current-time"></span></p>
+        
+        <h3>Join our Telegram Channel:</h3>
+        <a href="https://t.me/abhayytrading" target="_blank" rel="noopener noreferrer">Abhay Trading Channel</a>
+        
+        <h3>Available Assets:</h3>
+        <select id="asset-select">
+            <option value="">Select an asset</option>
+        </select>
+
+        <h3>Time Frame:</h3>
+        <select id="timeframe-select">
+            <option value="1">01:00 minutes</option>
+            <option value="2">02:00 minutes</option>
+            <option value="5" selected>05:00 minutes</option>
+            <option value="10">10:00 minutes</option>
+            <option value="15">15:00 minutes</option>
+            <option value="30">30:00 minutes</option>
+            <option value="60">01:00:00 hours</option>
+            <option value="120">02:00:00 hours</option>
+            <option value="240">04:00:00 hours</option>
+        </select>
+
+        <h3>Number of Signals to Generate:</h3>
+        <input type="number" id="signal-count" value="10" min="1" />
+
+        <h3>Filter Signals:</h3>
+        <select id="filter-select">
+            <option value="ALL">All</option>
+            <option value="CALL">CALL</option>
+            <option value="PUT">PUT</option>
+        </select>
+
+        <div class="button-container">
+            <button id="generate-signals">Generate Signals</button>
+            <button id="reset-signals">Reset Signals</button>
+            <button class="telegram-btn" onclick="window.open('https://t.me/abhayytrading', '_blank')">Join Telegram</button>
+        </div>
+
+        <p id="error-message" class="error-message"></p>
+        
+        <h3>Generated Signals:</h3>
+        <div id="candle-time" class="candle-time"></div>
+        <div id="mtg-message" class="mtg-message">Use 1Step MTG If You Lose</div>
+        <div id="signal-list"></div>
+        <button class="download-btn" id="download-signals">Download Signals (TXT)</button>
+        
+        <div id="animation-message" class="animation-message">
+            <h3>New Signals Generated!</h3>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // PASSWORD CONFIGURATION - EDIT HERE
+        // ============================================
+        const CORRECT_PASSWORD = "9717";           // Change password here
+        const AUTH_DURATION_DAYS = 3;              // Number of days before password is required again
+        // ============================================
+
+        const availableAssets = [
+            "AUD/CAD (OTC)", "AUD/CHF (OTC)", "AUD/JPY (OTC)", "AUD/NZD (OTC)", "AUD/USD (OTC)",
+            "CAD/CHF (OTC)", "CHF/JPY (OTC)", "EUR/AUD (OTC)", "EUR/CAD (OTC)", "EUR/CHF (OTC)",
+            "EUR/GBP (OTC)", "EUR/USD (OTC)", "GBP/AUD (OTC)", "GBP/CAD (OTC)", "GBP/CHF (OTC)",
+            "GBP/JPY (OTC)", "GBP/NZD (OTC)", "GBP/USD (OTC)", "NZD/CAD (OTC)", "NZD/CHF (OTC)",
+            "NZD/JPY (OTC)", "USD/BDT (OTC)", "USD/BRL (OTC)", "USD/CAD (OTC)", "USD/CHF (OTC)",
+            "USD/COP (OTC)", "USD/DZD (OTC)", "USD/INR (OTC)", "USD/JPY (OTC)", "USD/NGN (OTC)",
+            "USD/PKR (OTC)", "USD/SGD (OTC)", "USD/TRY (OTC)", "USD/ZAR (OTC)", "Bitcoin (OTC)",
+            "Gold (OTC)", "Silver (OTC)", "USCrude (OTC)", "UKBrent (OTC)"
+        ];
+
+        let signals = [];
+        let existingSignals = new Set();
+        let currentTimeframe = "5";
+        let userTimezone = "Asia/Kolkata";  // All India uses same IST timezone
+        let selectedCity = "Kolkata";       // Display city name
+        let gmtOffset = 5.5;  // IST is GMT+5:30
+        let gmtString = "GMT+5:30";
+
+        // Check if user is authenticated
+        function isAuthenticated() {
+            const authTimestamp = localStorage.getItem('authTimestamp');
+            if (!authTimestamp) {
+                return false;
+            }
+            
+            const currentTime = new Date().getTime();
+            const authTime = parseInt(authTimestamp);
+            const threeDaysInMs = AUTH_DURATION_DAYS * 24 * 60 * 60 * 1000;
+            
+            // Check if 3 days have passed
+            if (currentTime - authTime > threeDaysInMs) {
+                localStorage.removeItem('authTimestamp');
+                return false;
+            }
+            
+            return true;
+        }
+
+        // Save authentication
+        function saveAuthentication() {
+            const currentTime = new Date().getTime();
+            localStorage.setItem('authTimestamp', currentTime.toString());
+        }
+
+        // Show main container and hide password screen
+        function loginSuccess() {
+            document.getElementById('password-container').style.display = 'none';
+            document.getElementById('main-container').style.display = 'block';
+            updateTimezoneDisplay();
+        }
+
+        // Initialize authentication on page load
+        function initializeAuth() {
+            if (isAuthenticated()) {
+                // User is already authenticated, show login button
+                document.getElementById('password-screen').style.display = 'none';
+                document.getElementById('login-screen').style.display = 'block';
+            } else {
+                // User needs to enter password
+                document.getElementById('password-screen').style.display = 'block';
+                document.getElementById('login-screen').style.display = 'none';
+            }
+        }
+
+        // Quick login button handler
+        document.getElementById('quick-login-btn').addEventListener('click', function() {
+            if (isAuthenticated()) {
+                loginSuccess();
+            }
+        });
+
+        // Password protection
+        document.getElementById('submit-password').addEventListener('click', function() {
+            const enteredPassword = document.getElementById('password-input').value;
+            const errorElement = document.getElementById('password-error');
+            
+            if (enteredPassword === CORRECT_PASSWORD) {
+                saveAuthentication();
+                loginSuccess();
+            } else {
+                errorElement.style.display = 'block';
+            }
+        });
+
+        document.getElementById('password-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('submit-password').click();
+            }
+        });
+
+        function formatTime(date) {
+            const options = {
+                timeZone: userTimezone,
+                hour12: false,
+                hour: '2-digit',
+                minute: '2-digit'
+            };
+            return date.toLocaleTimeString('en-US', options);
+        }
+
+        function formatDate(date) {
+            const options = {
+                timeZone: userTimezone,
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+            };
+            return date.toLocaleDateString('en-US', options);
+        }
+
+        function getTimeframeText(timeframe) {
+            const minutes = parseInt(timeframe);
+            if (minutes < 60) {
+                return `${minutes} min`;
+            } else {
+                const hours = minutes / 60;
+                return `${hours} hour`;
+            }
+        }
+
+        function generateSignal(asset, time) {
+            // Generate completely random direction (50/50 chance)
+            let direction = Math.random() < 0.5 ? 'CALL' : 'PUT';
+            
+            return {
+                asset,
+                time,
+                direction
+            };
+        }
+
+        function generateRandomInterval() {
+            // Generate random interval between 1 to 8 minutes
+            return Math.floor(Math.random() * 8) + 1;
+        }
+
+        function generateUniqueTimes(count, timeframe) {
+            const times = [];
+            const startTime = new Date();
+            let cumulativeMinutes = 0;
+            
+            for (let i = 0; i < count; i++) {
+                // Add random interval (1-8 minutes) to the cumulative time
+                const randomInterval = generateRandomInterval();
+                cumulativeMinutes += randomInterval;
+                
+                // Create new date for each signal
+                const nextTime = new Date(startTime.getTime() + cumulativeMinutes * 60 * 1000);
+                times.push(formatTime(nextTime));
+            }
+            
+            return times;
+        }
+
+        function handleGenerateSignals() {
+            const selectedAsset = document.getElementById('asset-select').value;
+            const signalCount = Number(document.getElementById('signal-count').value);
+            const timeframe = document.getElementById('timeframe-select').value;
+            const errorMessage = document.getElementById('error-message');
+            const generateBtn = document.getElementById('generate-signals');
+            
+            if (!selectedAsset) {
+                errorMessage.textContent = 'Please select an asset before generating signals!';
+                return;
+            }
+
+            if (!signalCount || signalCount < 1) {
+                errorMessage.textContent = 'Please enter a valid number of signals!';
+                return;
+            }
+
+            // Disable button temporarily to prevent multiple clicks
+            generateBtn.disabled = true;
+            generateBtn.textContent = 'Generating...';
+            
+            errorMessage.textContent = '';
+            
+            // Use setTimeout to ensure UI updates
+            setTimeout(() => {
+                try {
+                    const uniqueTimes = generateUniqueTimes(signalCount, timeframe);
+                    const newSignals = [];
+
+                    uniqueTimes.forEach((time) => {
+                        // Always generate signal, no duplicate checking
+                        const newSignal = generateSignal(selectedAsset, time);
+                        newSignals.push(newSignal);
+                        const signalKey = `${selectedAsset} | ${time}`;
+                        existingSignals.add(signalKey);
+                    });
+
+                    // Always add signals
+                    signals.push(...newSignals);
+                    
+                    // Update candle time display
+                    currentTimeframe = timeframe;
+                    document.getElementById('candle-time').textContent = `Candle time: ${getTimeframeText(currentTimeframe)}`;
+                    
+                    // Always display signals
+                    if (newSignals.length > 0) {
+                        displaySignals(newSignals);
+                        showAnimation();
+                    }
+                } catch (error) {
+                    console.error('Error generating signals:', error);
+                    errorMessage.textContent = 'Error generating signals. Please try again.';
+                } finally {
+                    // Re-enable button
+                    generateBtn.disabled = false;
+                    generateBtn.textContent = 'Generate Signals';
+                }
+            }, 100);
+        }
+
+        function displaySignals(newSignals) {
+            const signalList = document.getElementById('signal-list');
+            newSignals.forEach(signal => {
+                const signalItem = document.createElement('div');
+                signalItem.className = 'signal-item';
+                
+                // Format the signal line with proper spacing
+                const assetPart = signal.asset.padEnd(15, ' ');
+                const timePart = signal.time.padEnd(8, ' ');
+                const directionPart = signal.direction.padEnd(10, ' ');
+                
+                signalItem.textContent = `${assetPart} ; ${timePart} ; ${directionPart}`;
+                signalItem.classList.add(signal.direction === 'CALL' ? 'signal-call' : 'signal-put');
+                
+                signalList.appendChild(signalItem);
+            });
+        }
+
+        function downloadSignals() {
+            if (signals.length === 0) {
+                document.getElementById('error-message').textContent = 'No signals to download!';
+                return;
+            }
+
+            let content = "AI With Abhay\n";
+            content += "Generated on: " + new Date().toLocaleString() + "\n";
+            content += "Timezone: " + selectedCity + ", India (" + gmtString + ")\n";
+            content += "Candle time: " + getTimeframeText(currentTimeframe) + "\n";
+            content += "Use 1Step MTG If You Lose\n\n";
+            content += "==============================================\n";
+            content += "ASSET           ; TIME     ; DIRECTION\n";
+            content += "==============================================\n";
+            
+            signals.forEach(signal => {
+                const assetPart = signal.asset.padEnd(15, ' ');
+                const timePart = signal.time.padEnd(8, ' ');
+                const directionPart = signal.direction.padEnd(10, ' ');
+                content += `${assetPart} ; ${timePart} ; ${directionPart}\n`;
+            });
+            
+            content += "\n\nJoin our Telegram channel for more signals: https://t.me/abhayytrading";
+            
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `AI With Abhay_${new Date().toISOString().slice(0,10)}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function showAnimation() {
+            const animationMessage = document.getElementById('animation-message');
+            animationMessage.style.display = 'block';
+            setTimeout(() => {
+                animationMessage.style.display = 'none';
+            }, 2000);
+        }
+
+        function handleResetSignals() {
+            signals = [];
+            existingSignals = new Set();
+            document.getElementById('signal-list').innerHTML = '';
+            document.getElementById('candle-time').textContent = '';
+            document.getElementById('error-message').textContent = '';
+        }
+
+        function updateDateTime() {
+            const currentDate = new Date();
+            document.getElementById('current-date').textContent = formatDate(currentDate);
+            document.getElementById('current-time').textContent = formatTime(currentDate);
+        }
+
+        function updateTimezoneDisplay() {
+            document.getElementById('timezone-display').textContent = `${selectedCity}, India (${gmtString})`;
+            updateDateTime();
+        }
+
+        function handleTimezoneChange() {
+            selectedCity = document.getElementById('timezone-select').value;
+            // Always use Asia/Kolkata timezone (all India uses same IST)
+            userTimezone = "Asia/Kolkata";
+            updateTimezoneDisplay();
+        }
+
+        // Populate the asset dropdown
+        const assetSelect = document.getElementById('asset-select');
+        availableAssets.forEach(asset => {
+            const option = document.createElement('option');
+            option.value = asset;
+            option.textContent = asset;
+            assetSelect.appendChild(option);
+        });
+
+        // Event listeners
+        document.getElementById('generate-signals').addEventListener('click', handleGenerateSignals);
+        document.getElementById('reset-signals').addEventListener('click', handleResetSignals);
+        document.getElementById('download-signals').addEventListener('click', downloadSignals);
+        document.getElementById('timeframe-select').addEventListener('change', function() {
+            currentTimeframe = this.value;
+        });
+        document.getElementById('timezone-select').addEventListener('change', handleTimezoneChange);
+
+        // Update time every second
+        setInterval(updateDateTime, 1000);
+        updateDateTime();
+        
+        // Initialize authentication system on page load
+        initializeAuth();
+    </script>
+</body>
+</html>
